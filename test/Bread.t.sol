@@ -80,5 +80,23 @@ contract BreadTest is Test {
     assertGt(daiBefore, daiAfter);
     assertGt(breadAfter, breadBefore);
     assertEq(breadAfter, daiBefore - daiAfter);
+
+    // mint to another
+    uint256 daiBeforeAdmin = dai.balanceOf(admin);
+    uint256 breadBeforeAdmin = bread.balanceOf(admin);
+
+    vm.prank(admin);
+    dai.approve(address(bread), daiBeforeAdmin / 10);
+    bread.mint(daiBeforeAdmin / 10, signer);
+
+    uint256 daiAfterAdmin = dai.balanceOf(admin);
+    uint256 breadAfterAdmin = bread.balanceOf(admin);
+    uint256 breadFinal = bread.balanceOf(signer);
+
+    assertEq(breadBeforeAdmin, 0);
+    assertEq(breadBeforeAdmin, breadAfterAdmin);
+    assertGt(daiBeforeAdmin, daiAfterAdmin);
+    assertGt(breadFinal, breadAfter);
+    assertEq(breadFinal, breadAfter + (daiBeforeAdmin - daiAfterAdmin));
   }
 }
