@@ -62,7 +62,7 @@ contract BreadTest is Test {
 
     vm.deal(admin, 10 ether);
   }
-  function test_mint() public {
+  function test_mint_burn() public {
     uint256 daiBefore = dai.balanceOf(signer);
     uint256 breadBefore = bread.balanceOf(signer);
 
@@ -101,17 +101,26 @@ contract BreadTest is Test {
     assertGt(breadFinal, breadAfter);
     assertEq(breadFinal, breadAfter + (daiBeforeAdmin - daiAfterAdmin));
     vm.stopPrank();
+
+    // burn
     uint256 aDaiBalance = aDai.balanceOf(address(bread));
     assertGt(aDaiBalance, 0);
-    emit log_uint(aDaiBalance);
-  }
-  function test_burn() public {
-    uint256 aDaiBalance = aDai.balanceOf(address(bread));
-    emit log_uint(aDaiBalance);
-    //assertGt(aDaiBalance, 0);
 
     vm.prank(admin);
+    vm.expectRevert("Bread: cannot withdraw collateral");
     bread.rescueToken(address(aDai), 1);
+
+    uint256 supplyBefore = bread.totalSupply();
+    uint256 burn_daiBefore = dai.balanceOf(admin);
+    vm.prank(signer);
+    bread.burn(supplyBefore, admin);
+    uint256 supplyAfter = bread.totalSupply();
+    uint256 burn_daiAfter = dai.balanceOf(admin);
+
+    assertGt(supplyBefore, supplyAfter);
+    assertEq(supplyAfter, 0);
+    assertGt(burn_daiAfter, burn_daiBefore);
+    assertEq(burn_daiAfter, burn_daiBefore + supplyBefore);
   }
   function test_protect_owner_functions() public {
     vm.prank(signer);

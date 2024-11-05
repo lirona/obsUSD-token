@@ -31,8 +31,8 @@
             nodePackages.ts-node
             nodePackages.pnpm
 
-            solc_0_8_13
-            (solc.mkDefault pkgs solc_0_8_13)
+            #solc_0_8_13
+            #(solc.mkDefault pkgs solc_0_8_13)
 
           ];
 
