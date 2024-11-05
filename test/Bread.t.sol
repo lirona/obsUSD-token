@@ -113,6 +113,27 @@ contract BreadTest is Test {
     vm.prank(admin);
     bread.rescueToken(address(aDai), 1);
   }
+  function test_protect_owner_functions() public {
+    vm.prank(signer);
+    vm.expectRevert();
+    bread.rescueToken(address(aDai), 1);
+  }
+  function test_resecue() public {
+    uint256 bb_before = dai.balanceOf(address(bread));
+    uint256 signerDai = dai.balanceOf(signer);
+    vm.prank(signer);
+    dai.transfer(address(bread), signerDai);
+    uint256 bb_after = dai.balanceOf(address(bread));
+    assertEq(bb_before, 0);
+    assertGt(bb_after, bb_before);
+
+    uint256 admin_before = dai.balanceOf(admin);
+    vm.prank(admin);
+    bread.rescueToken(address(dai), bb_after);
+    uint256 admin_after = dai.balanceOf(admin);
+    assertGt(admin_after, admin_before);
+    assertEq(admin_after, admin_before + bb_after);
+  }
   function test_upgradeablity() public {
     vm.prank(signer);
     vm.expectRevert("NOT_AUTHORIZED");
