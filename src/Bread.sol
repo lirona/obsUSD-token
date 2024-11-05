@@ -1,33 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-
 // Bread - An ERC20 stablecoin fully collateralized by DAI
 // which earns yield in Aave for the Breadchain Ecosystem
 // implemented by: kassandra.eth
 
-import {
-    SafeERC20,
-    IERC20
-} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {
-    ERC20Upgradeable
-} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    ReentrancyGuardUpgradeable
-} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {IPool} from "./interfaces/IPool.sol";
 import {IRewardsController} from "./interfaces/IRewardsController.sol";
 
-contract Bread is
-    ERC20Upgradeable,
-    OwnableUpgradeable,
-    ReentrancyGuardUpgradeable
-{
+contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
+
     IERC20 public immutable token;
     IERC20 public immutable aToken;
     IPool public immutable pool;
@@ -39,13 +26,7 @@ contract Bread is
     event ClaimedYield(uint256 amount);
     event ClaimedRewards(address[] rewardsList, uint256[] claimedAmounts);
 
-    constructor(
-        address _token,
-        address _aToken,
-        address _pool,
-        address _rewards
-
-    ) {
+    constructor(address _token, address _aToken, address _pool, address _rewards) {
         token = IERC20(_token);
         aToken = IERC20(_aToken);
         pool = IPool(_pool);
@@ -89,10 +70,7 @@ contract Bread is
     function claimRewards() external nonReentrant {
         address[] memory assets;
         assets[0] = address(aToken);
-        (
-            address[] memory rewardsList,
-            uint256[] memory claimedAmounts
-        ) = rewards.claimAllRewards(assets, owner());
+        (address[] memory rewardsList, uint256[] memory claimedAmounts) = rewards.claimAllRewards(assets, owner());
 
         emit ClaimedRewards(rewardsList, claimedAmounts);
     }
@@ -106,11 +84,7 @@ contract Bread is
         return _yieldAccrued();
     }
 
-    function rewardsAccrued()
-        external
-        view
-        returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts)
-    {
+    function rewardsAccrued() external view returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts) {
         address[] memory assets;
         assets[0] = address(aToken);
         return rewards.getAllUserRewards(assets, address(this));

@@ -11,18 +11,11 @@ interface ERC165 {
 contract EIP173Proxy is Proxy {
     // ////////////////////////// EVENTS ///////////////////////////////////////////////////////////////////////
 
-    event ProxyAdminTransferred(
-        address indexed previousAdmin,
-        address indexed newAdmin
-    );
+    event ProxyAdminTransferred(address indexed previousAdmin, address indexed newAdmin);
 
     // /////////////////////// CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
-    constructor(
-        address implementationAddress,
-        address adminAddress,
-        bytes memory data
-    ) payable {
+    constructor(address implementationAddress, address adminAddress, bytes memory data) payable {
         _setImplementation(implementationAddress, data);
         _setProxyAdmin(adminAddress);
     }
@@ -44,9 +37,7 @@ contract EIP173Proxy is Proxy {
         ERC165 implementation;
         // solhint-disable-next-line security/no-inline-assembly
         assembly {
-            implementation := sload(
-                0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
-            )
+            implementation := sload(0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc)
         }
 
         // Technically this is not standard compliant as ERC-165 require 30,000 gas which that call cannot ensure
@@ -67,11 +58,7 @@ contract EIP173Proxy is Proxy {
         _setImplementation(newImplementation, "");
     }
 
-    function upgradeToAndCall(address newImplementation, bytes calldata data)
-        external
-        payable
-        onlyProxyAdmin
-    {
+    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable onlyProxyAdmin {
         _setImplementation(newImplementation, data);
     }
 
@@ -87,9 +74,7 @@ contract EIP173Proxy is Proxy {
     function _proxyAdmin() internal view returns (address adminAddress) {
         // solhint-disable-next-line security/no-inline-assembly
         assembly {
-            adminAddress := sload(
-                0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103
-            )
+            adminAddress := sload(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103)
         }
     }
 
@@ -97,10 +82,7 @@ contract EIP173Proxy is Proxy {
         address previousAdmin = _proxyAdmin();
         // solhint-disable-next-line security/no-inline-assembly
         assembly {
-            sstore(
-                0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,
-                newAdmin
-            )
+            sstore(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103, newAdmin)
         }
         emit ProxyAdminTransferred(previousAdmin, newAdmin);
     }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-
 interface IRewardsController {
     function claimAllRewards(address[] calldata assets, address to)
         external
