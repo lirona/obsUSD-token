@@ -26,7 +26,7 @@ contract BreadTest is Test {
         address breadAddress = address(
             new Bread(
                 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1,
-                0x8619d80FB0141ba7F184CbF22fd724116D9f7ffC,
+                0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE,
                 0x794a61358D6845594F94dc1DB02A252b5b4814aD,
                 0x929EC64c34a17401F460460D4B9390518E5B473e
             )
@@ -44,7 +44,7 @@ contract BreadTest is Test {
         breadProxy.transferProxyAdmin(admin);
 
         dai = IERC20(0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1);
-        aDai = IERC20(0x8619d80FB0141ba7F184CbF22fd724116D9f7ffC);
+        aDai = IERC20(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE);
 
         // get some DAI from some acct
         vm.startPrank(DAI_HOLDER);
