@@ -2,16 +2,20 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    solc.url = "github:hellwolf/solc.nix";
     utils.url = "github:numtide/flake-utils";
     foundry.url = "github:shazow/foundry.nix/monthly"; # Use monthly branch for permanent releases
   };
 
-  outputs = { self, nixpkgs, utils, foundry }:
+  outputs = { self, nixpkgs, solc, utils, foundry }:
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ foundry.overlay ];
+          overlays = [ 
+            foundry.overlay
+            solc.overlay  
+          ];
         };
       in {
 
@@ -27,12 +31,16 @@
             nodePackages.ts-node
             nodePackages.pnpm
 
-            # ... any other dependencies we need
-            solc
+            solc_0_4_26
+            solc_0_7_6
+            solc_0_8_19
+            (solc.mkDefault pkgs solc_0_7_6)
+
           ];
 
           # Decorative prompt override so we know when we're in a dev shell
           shellHook = ''
+            alias test="forge test --fork-url https://polygon-rpc.com"
           '';
         };
       });

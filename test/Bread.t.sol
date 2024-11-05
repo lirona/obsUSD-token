@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 import {Bread} from "../src/Bread.sol";
@@ -23,7 +24,6 @@ contract BreadTest is Test {
   Bread public bread;
 
   function setUp() public {
-    emit log("Setup...");
     vm.startPrank(admin);
     address breadAddress = address(
       new Bread(
@@ -33,7 +33,6 @@ contract BreadTest is Test {
         0x929EC64c34a17401F460460D4B9390518E5B473e
       )
     );
-    emit log("Contract deploed...");
 
     breadProxy = new EIP173Proxy(
       breadAddress,
@@ -41,26 +40,24 @@ contract BreadTest is Test {
       bytes("")
     );
 
-    emit log("Proxy deploed...");
 
     vm.stopPrank();
     bread = Bread(address(breadProxy));
     vm.startPrank(admin);
     bread.initialize("Breadchain Stablecoin", "BREAD");
     vm.stopPrank();
+    address proxyAdmin = breadProxy.proxyAdmin();
+    vm.prank(proxyAdmin);
+    breadProxy.transferProxyAdmin(admin);
 
     dai = IERC20(0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063);
     aDai = IERC20(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE);
 
-    emit log("DAI and aDAI addresses set");
     // get some DAI from some acct
     vm.startPrank(DAI_HOLDER);
     uint256 daiHolderBalance = dai.balanceOf(DAI_HOLDER);
-    emit log_uint(daiHolderBalance);
     dai.transfer(admin, daiHolderBalance/4);
     dai.transfer(signer, daiHolderBalance/4);
-    emit log_uint(dai.balanceOf(admin));
-    emit log_uint(dai.balanceOf(signer));
     vm.stopPrank();
 
     vm.deal(admin, 10 ether);
@@ -69,12 +66,16 @@ contract BreadTest is Test {
     uint256 daiBefore = dai.balanceOf(signer);
     uint256 breadBefore = bread.balanceOf(signer);
 
+    uint256 mintAmt = daiBefore / 10;
+
     vm.prank(signer);
-    dai.approve(address(bread), daiBefore / 10);
-    bread.mint(daiBefore / 10, signer);
+    dai.approve(address(bread), mintAmt);
+    vm.prank(signer);
+    bread.mint(mintAmt, signer);
 
     uint256 daiAfter = dai.balanceOf(signer);
     uint256 breadAfter = bread.balanceOf(signer);
+
 
     assertEq(breadBefore, 0);
     assertGt(daiBefore, daiAfter);
@@ -86,8 +87,9 @@ contract BreadTest is Test {
     uint256 breadBeforeAdmin = bread.balanceOf(admin);
 
     vm.prank(admin);
-    dai.approve(address(bread), daiBeforeAdmin / 10);
-    bread.mint(daiBeforeAdmin / 10, signer);
+    dai.approve(address(bread), mintAmt);
+    vm.prank(admin);
+    bread.mint(mintAmt / 10, signer);
 
     uint256 daiAfterAdmin = dai.balanceOf(admin);
     uint256 breadAfterAdmin = bread.balanceOf(admin);
@@ -98,5 +100,35 @@ contract BreadTest is Test {
     assertGt(daiBeforeAdmin, daiAfterAdmin);
     assertGt(breadFinal, breadAfter);
     assertEq(breadFinal, breadAfter + (daiBeforeAdmin - daiAfterAdmin));
+    vm.stopPrank();
+    uint256 aDaiBalance = aDai.balanceOf(address(bread));
+    assertGt(aDaiBalance, 0);
+    emit log_uint(aDaiBalance);
+  }
+  function test_burn() public {
+    uint256 aDaiBalance = aDai.balanceOf(address(bread));
+    emit log_uint(aDaiBalance);
+    //assertGt(aDaiBalance, 0);
+
+    vm.prank(admin);
+    bread.rescueToken(address(aDai), 1);
+  }
+  function test_upgradeablity() public {
+    vm.prank(signer);
+    vm.expectRevert("NOT_AUTHORIZED");
+    breadProxy.transferProxyAdmin(DAI_HOLDER);
+
+    vm.prank(signer);
+    vm.expectRevert("NOT_AUTHORIZED");
+    breadProxy.upgradeTo(DAI_HOLDER);
+
+    vm.prank(admin);
+    breadProxy.upgradeTo(DAI_HOLDER);
+
+    vm.prank(admin);
+    breadProxy.transferProxyAdmin(DAI_HOLDER);
+
+    address proxyAdmin = breadProxy.proxyAdmin();
+    assertEq(proxyAdmin, DAI_HOLDER);
   }
 }
