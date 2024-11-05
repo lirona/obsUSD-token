@@ -4,6 +4,10 @@ out = "out"
 libs = ["dependencies"]
 evm_version = "shanghai"
 
+[rpc_endpoints]
+optimism = "https://mainnet.optimism.io" # Mainnet RPC URL
+optimismGoerli = "https://goerli.optimism.io" # Optimism Goerli testnet
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 [dependencies]
 forge-std = { version = "1.9.4", url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_4_25-10-2024_14:36:59_forge-std-1.9.zip" }

@@ -1,4 +1,3 @@
-# flake.nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -38,7 +37,7 @@
 
           # Decorative prompt override so we know when we're in a dev shell
           shellHook = ''
-            alias test="forge test --fork-url https://polygon-rpc.com"
+            alias test="forge test --fork-url https://mainnet.optimism.io"
           '';
         };
       });
