@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Bread} from "../src/Bread.sol";
+import {BuildersDollar} from "../src/BuildersDollar.sol";
 import {Test} from "forge-std/Test.sol";
 import {EIP173Proxy} from "../src/proxy/EIP173Proxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -12,19 +12,19 @@ interface Depositable {
 
 interface IERC20Depositable is Depositable, IERC20 {}
 
-contract BreadTest is Test {
+contract BuildersDollarTest is Test {
     IERC20 public dai;
     IERC20 public aDai;
     address public constant admin = 0x6A148b997e6651237F2fCfc9E30330a6480519f0;
     address public constant signer = 0x4B5BaD436CcA8df3bD39A095b84991fAc9A226F1;
     address public constant DAI_HOLDER = 0x48A63097E1Ac123b1f5A8bbfFafA4afa8192FaB0;
-    EIP173Proxy public breadProxy;
-    Bread public bread;
+    EIP173Proxy public buildersDollarProxy;
+    BuildersDollar public BuildersDollar;
 
     function setUp() public {
         vm.startPrank(admin);
-        address breadAddress = address(
-            new Bread(
+        address buildersDollarAddress = address(
+            new buildersDollar(
                 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1,
                 0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE,
                 0x794a61358D6845594F94dc1DB02A252b5b4814aD,
@@ -32,16 +32,16 @@ contract BreadTest is Test {
             )
         );
 
-        breadProxy = new EIP173Proxy(breadAddress, address(this), bytes(""));
+        buildersDollarProxy = new EIP173Proxy(buildersDollarAddress, address(this), bytes(""));
 
         vm.stopPrank();
-        bread = Bread(address(breadProxy));
+        buildersDollar = buildersDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
-        bread.initialize("Breadchain Stablecoin", "BREAD");
+        buildersDollar.initialize("buildersDollarchain Stablecoin", "buildersDollar");
         vm.stopPrank();
-        address proxyAdmin = breadProxy.proxyAdmin();
+        address proxyAdmin = buildersDollarProxy.proxyAdmin();
         vm.prank(proxyAdmin);
-        breadProxy.transferProxyAdmin(admin);
+        buildersDollarProxy.transferProxyAdmin(admin);
 
         dai = IERC20(0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1);
         aDai = IERC20(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE);
@@ -60,58 +60,58 @@ contract BreadTest is Test {
 
     function test_mint_burn() public {
         uint256 daiBefore = dai.balanceOf(signer);
-        uint256 breadBefore = bread.balanceOf(signer);
+        uint256 buildersDollarBefore = buildersDollar.balanceOf(signer);
 
         uint256 mintAmt = daiBefore / 10;
 
         vm.prank(signer);
-        dai.approve(address(bread), mintAmt);
+        dai.approve(address(buildersDollar), mintAmt);
         vm.prank(signer);
-        bread.mint(mintAmt, signer);
+        buildersDollar.mint(mintAmt, signer);
 
         uint256 daiAfter = dai.balanceOf(signer);
-        uint256 breadAfter = bread.balanceOf(signer);
+        uint256 buildersDollarAfter = buildersDollar.balanceOf(signer);
 
-        assertEq(breadBefore, 0);
+        assertEq(buildersDollarBefore, 0);
         assertGt(daiBefore, daiAfter);
-        assertGt(breadAfter, breadBefore);
-        assertEq(breadAfter, daiBefore - daiAfter);
+        assertGt(buildersDollarAfter, buildersDollarBefore);
+        assertEq(buildersDollarAfter, daiBefore - daiAfter);
 
         // mint to another
         uint256 daiBeforeAdmin = dai.balanceOf(admin);
-        uint256 breadBeforeAdmin = bread.balanceOf(admin);
+        uint256 buildersDollarBeforeAdmin = buildersDollar.balanceOf(admin);
 
         vm.prank(admin);
-        dai.approve(address(bread), mintAmt);
+        dai.approve(address(buildersDollar), mintAmt);
         vm.prank(admin);
-        bread.mint(mintAmt / 10, signer);
+        buildersDollar.mint(mintAmt / 10, signer);
 
         uint256 daiAfterAdmin = dai.balanceOf(admin);
-        uint256 breadAfterAdmin = bread.balanceOf(admin);
-        uint256 breadFinal = bread.balanceOf(signer);
+        uint256 buildersDollarAfterAdmin = buildersDollar.balanceOf(admin);
+        uint256 buildersDollarFinal = buildersDollar.balanceOf(signer);
 
-        assertEq(breadBeforeAdmin, 0);
-        assertEq(breadBeforeAdmin, breadAfterAdmin);
+        assertEq(buildersDollarBeforeAdmin, 0);
+        assertEq(buildersDollarBeforeAdmin, buildersDollarAfterAdmin);
         assertGt(daiBeforeAdmin, daiAfterAdmin);
-        assertGt(breadFinal, breadAfter);
-        assertEq(breadFinal, breadAfter + (daiBeforeAdmin - daiAfterAdmin));
+        assertGt(buildersDollarFinal, buildersDollarAfter);
+        assertEq(buildersDollarFinal, buildersDollarAfter + (daiBeforeAdmin - daiAfterAdmin));
         vm.stopPrank();
 
-        uint256 aaDaiBalance = aDai.balanceOf(address(bread));
+        uint256 aaDaiBalance = aDai.balanceOf(address(buildersDollar));
         emit log_uint(aaDaiBalance);
         // burn
-        uint256 aDaiBalance = aDai.balanceOf(address(bread));
+        uint256 aDaiBalance = aDai.balanceOf(address(buildersDollar));
         assertGt(aDaiBalance, 0);
 
         vm.prank(admin);
-        vm.expectRevert("Bread: cannot withdraw collateral");
-        bread.rescueToken(address(aDai), 1);
+        vm.expectRevert("buildersDollar: cannot withdraw collateral");
+        buildersDollar.rescueToken(address(aDai), 1);
 
-        uint256 supplyBefore = bread.totalSupply();
+        uint256 supplyBefore = buildersDollar.totalSupply();
         uint256 burn_daiBefore = dai.balanceOf(admin);
         vm.prank(signer);
-        bread.burn(supplyBefore, admin);
-        uint256 supplyAfter = bread.totalSupply();
+        buildersDollar.burn(supplyBefore, admin);
+        uint256 supplyAfter = buildersDollar.totalSupply();
         uint256 burn_daiAfter = dai.balanceOf(admin);
 
         assertGt(supplyBefore, supplyAfter);
@@ -123,21 +123,21 @@ contract BreadTest is Test {
     function test_protect_owner_functions() public {
         vm.prank(signer);
         vm.expectRevert();
-        bread.rescueToken(address(aDai), 1);
+        buildersDollar.rescueToken(address(aDai), 1);
     }
 
     function test_resecue() public {
-        uint256 bb_before = dai.balanceOf(address(bread));
+        uint256 bb_before = dai.balanceOf(address(buildersDollar));
         uint256 signerDai = dai.balanceOf(signer);
         vm.prank(signer);
-        dai.transfer(address(bread), signerDai);
-        uint256 bb_after = dai.balanceOf(address(bread));
+        dai.transfer(address(buildersDollar), signerDai);
+        uint256 bb_after = dai.balanceOf(address(buildersDollar));
         assertEq(bb_before, 0);
         assertGt(bb_after, bb_before);
 
         uint256 admin_before = dai.balanceOf(admin);
         vm.prank(admin);
-        bread.rescueToken(address(dai), bb_after);
+        buildersDollar.rescueToken(address(dai), bb_after);
         uint256 admin_after = dai.balanceOf(admin);
         assertGt(admin_after, admin_before);
         assertEq(admin_after, admin_before + bb_after);
@@ -146,19 +146,19 @@ contract BreadTest is Test {
     function test_upgradeablity() public {
         vm.prank(signer);
         vm.expectRevert("NOT_AUTHORIZED");
-        breadProxy.transferProxyAdmin(DAI_HOLDER);
+        buildersDollarProxy.transferProxyAdmin(DAI_HOLDER);
 
         vm.prank(signer);
         vm.expectRevert("NOT_AUTHORIZED");
-        breadProxy.upgradeTo(DAI_HOLDER);
+        buildersDollarProxy.upgradeTo(DAI_HOLDER);
 
         vm.prank(admin);
-        breadProxy.upgradeTo(DAI_HOLDER);
+        buildersDollarProxy.upgradeTo(DAI_HOLDER);
 
         vm.prank(admin);
-        breadProxy.transferProxyAdmin(DAI_HOLDER);
+        buildersDollarProxy.transferProxyAdmin(DAI_HOLDER);
 
-        address proxyAdmin = breadProxy.proxyAdmin();
+        address proxyAdmin = buildersDollarProxy.proxyAdmin();
         assertEq(proxyAdmin, DAI_HOLDER);
     }
 }
