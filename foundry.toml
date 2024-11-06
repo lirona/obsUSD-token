@@ -3,7 +3,7 @@ src = "src"
 out = "out"
 libs = ["dependencies"]
 evm_version = "shanghai"
-
+fs_permissions = [{ access = "read-write", path = "./" }]
 [rpc_endpoints]
 optimism = "https://mainnet.optimism.io" # Mainnet RPC URL
 optimismGoerli = "https://goerli.optimism.io" # Optimism Goerli testnet
