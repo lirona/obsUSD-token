@@ -104,7 +104,7 @@ contract BuildersDollarTest is Test {
         assertGt(aDaiBalance, 0);
 
         vm.prank(admin);
-        vm.expectRevert("buildersDollar: cannot withdraw collateral");
+        vm.expectRevert("BuildersDollar: cannot withdraw collateral");
         buildersDollar.rescueToken(address(aDai), 1);
 
         uint256 supplyBefore = buildersDollar.totalSupply();
