@@ -13,22 +13,28 @@ interface Depositable {
 interface IERC20Depositable is Depositable, IERC20 {}
 
 contract BuildersDollarTest is Test {
-    IERC20 public dai;
-    IERC20 public aDai;
+    address public constant daiAddress = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
+    address public constant aDaiAddress = 0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE;
+    address public constant poolAddress = 0x794a61358D6845594F94dc1DB02A252b5b4814aD;
+    address public constant rewardsAddress = 0x929EC64c34a17401F460460D4B9390518E5B473e;
     address public constant admin = 0x6A148b997e6651237F2fCfc9E30330a6480519f0;
     address public constant signer = 0x4B5BaD436CcA8df3bD39A095b84991fAc9A226F1;
     address public constant DAI_HOLDER = 0x48A63097E1Ac123b1f5A8bbfFafA4afa8192FaB0;
+    IERC20 public dai = IERC20(daiAddress);
+    IERC20 public aDai = IERC20(aDaiAddress);
     EIP173Proxy public buildersDollarProxy;
     BuildersDollar public buildersDollar;
 
     function setUp() public {
+        vm.rollFork(125665270);
+
         vm.startPrank(admin);
         address buildersDollarAddress = address(
             new BuildersDollar(
-                0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1,
-                0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE,
-                0x794a61358D6845594F94dc1DB02A252b5b4814aD,
-                0x929EC64c34a17401F460460D4B9390518E5B473e
+                daiAddress,
+                aDaiAddress,
+                poolAddress,
+                rewardsAddress
             )
         );
 
@@ -160,5 +166,18 @@ contract BuildersDollarTest is Test {
 
         address proxyAdmin = buildersDollarProxy.proxyAdmin();
         assertEq(proxyAdmin, DAI_HOLDER);
+    }
+
+    function test_yield_accuumulation() public {
+        uint256 balanceOfDAI_HOLDER = dai.balanceOf(DAI_HOLDER);
+        assertGt(balanceOfDAI_HOLDER, 0);
+        vm.prank(DAI_HOLDER);
+        dai.approve(address(buildersDollar), balanceOfDAI_HOLDER);
+        vm.prank(DAI_HOLDER);
+        buildersDollar.mint(balanceOfDAI_HOLDER, DAI_HOLDER);
+        vm.rollFork(127665270);
+        uint256 yieldAccured = buildersDollar.yieldAccrued();
+        assertGt(yieldAccured, 0);
+
     }
 }
