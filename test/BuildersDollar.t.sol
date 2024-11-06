@@ -19,12 +19,12 @@ contract BuildersDollarTest is Test {
     address public constant signer = 0x4B5BaD436CcA8df3bD39A095b84991fAc9A226F1;
     address public constant DAI_HOLDER = 0x48A63097E1Ac123b1f5A8bbfFafA4afa8192FaB0;
     EIP173Proxy public buildersDollarProxy;
-    BuildersDollar public BuildersDollar;
+    BuildersDollar public buildersDollar;
 
     function setUp() public {
         vm.startPrank(admin);
         address buildersDollarAddress = address(
-            new buildersDollar(
+            new BuildersDollar(
                 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1,
                 0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE,
                 0x794a61358D6845594F94dc1DB02A252b5b4814aD,
@@ -35,7 +35,7 @@ contract BuildersDollarTest is Test {
         buildersDollarProxy = new EIP173Proxy(buildersDollarAddress, address(this), bytes(""));
 
         vm.stopPrank();
-        buildersDollar = buildersDollar(address(buildersDollarProxy));
+        buildersDollar = BuildersDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
         buildersDollar.initialize("buildersDollarchain Stablecoin", "buildersDollar");
         vm.stopPrank();
