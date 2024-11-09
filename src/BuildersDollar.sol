@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-// Bread - An ERC20 stablecoin fully collateralized by DAI
-// which earns yield in Aave for the Breadchain Ecosystem
+// BuildersDollar - An ERC20 stablecoin fully collateralized by DAI
+// which earns yield in Aave for the BuildersDollarchain Ecosystem
 // implemented by: kassandra.eth
 
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -12,7 +12,7 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/ut
 import {IPool} from "./interfaces/IPool.sol";
 import {IRewardsController} from "./interfaces/IRewardsController.sol";
 
-contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable token;
@@ -40,7 +40,7 @@ contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function mint(uint256 amount, address receiver) external {
-        require(amount > 0, "Bread: mint 0");
+        require(amount > 0, "BuildersDollar: mint 0");
         IERC20 _token = token;
         IPool _pool = pool;
         _token.safeTransferFrom(msg.sender, address(this), amount);
@@ -51,7 +51,7 @@ contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function burn(uint256 amount, address receiver) external nonReentrant {
-        require(amount > 0, "Bread: burn 0");
+        require(amount > 0, "BuildersDollar: burn 0");
         _burn(msg.sender, amount);
         IPool _pool = pool;
         aToken.safeIncreaseAllowance(address(_pool), amount);
@@ -60,9 +60,9 @@ contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function claimYield(uint256 amount) external nonReentrant {
-        require(amount > 0, "Bread: claim 0");
+        require(amount > 0, "BuildersDollar: claim 0");
         uint256 yield = _yieldAccrued();
-        require(yield >= amount, "Bread: amount exceeds yield accrued");
+        require(yield >= amount, "BuildersDollar: amount exceeds yield accrued");
         pool.withdraw(address(token), amount, owner());
         emit ClaimedYield(amount);
     }
@@ -76,7 +76,7 @@ contract Bread is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function rescueToken(address tok, uint256 amount) external onlyOwner {
-        require(tok != address(aToken), "Bread: cannot withdraw collateral");
+        require(tok != address(aToken), "BuildersDollar: cannot withdraw collateral");
         IERC20(tok).safeTransfer(owner(), amount);
     }
 
