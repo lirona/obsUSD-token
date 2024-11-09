@@ -20,11 +20,22 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
     IPool public immutable pool;
     IRewardsController public immutable rewards;
 
+    address public yieldClaimer;
+
     event Minted(address receiver, uint256 amount);
     event Burned(address receiver, uint256 amount);
 
+    event YieldClaimerSet(address yieldClaimer);
+
     event ClaimedYield(uint256 amount);
     event ClaimedRewards(address[] rewardsList, uint256[] claimedAmounts);
+
+    error OnlyClaimers();
+    error ClaimZero();
+    error YieldInsufficient();
+
+    error ClaimRewardsFailedLowLevel();
+    error ClaimRewardsFailed();
 
     constructor(address _token, address _aToken, address _pool, address _rewards) {
         token = IERC20(_token);
@@ -37,6 +48,22 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         __ERC20_init(name, symbol);
         __ReentrancyGuard_init();
         __Ownable_init(msg.sender);
+    }
+
+    function setYieldClaimer(address _yieldClaimer) external onlyOwner {
+        yieldClaimer = _yieldClaimer;
+        emit YieldClaimerSet(_yieldClaimer);
+    }
+
+    modifier onlyYieldClaimer() {
+        _checkYieldClaimer();
+        _;
+    }
+
+    function _checkYieldClaimer() internal view virtual {
+        if (yieldClaimer != msg.sender) {
+            revert OwnableUnauthorizedAccount(msg.sender);
+        }
     }
 
     function mint(uint256 amount, address receiver) external {
@@ -59,12 +86,19 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         emit Burned(receiver, amount);
     }
 
-    function claimYield(uint256 amount) external nonReentrant {
-        require(amount > 0, "BuildersDollar: claim 0");
+    function claimYield(uint256 amount) external onlyYieldClaimer {
+        if (amount == 0) revert ClaimZero();
         uint256 yield = _yieldAccrued();
-        require(yield >= amount, "BuildersDollar: amount exceeds yield accrued");
+        if (yield < amount) revert YieldInsufficient();
         pool.withdraw(address(token), amount, owner());
         emit ClaimedYield(amount);
+
+        try this.claimRewards() {} catch Error(string memory) {
+            revert ClaimRewardsFailed();
+        } catch (bytes memory) {
+            revert ClaimRewardsFailedLowLevel();
+        }
+
     }
 
     function claimRewards() external nonReentrant {
