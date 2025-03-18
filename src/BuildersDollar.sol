@@ -8,6 +8,7 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/ut
 import {IPool} from "src/interfaces/IPool.sol";
 import {IRewardsController} from "src/interfaces/IRewardsController.sol";
 import {IBuildersDollar} from "src/interfaces/IBuildersDollar.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuildersDollar {
     using SafeERC20 for IERC20;
@@ -27,6 +28,9 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
     /// @inheritdoc IBuildersDollar
     address public yieldTribute;
 
+    /// @notice this.decimals match TOKEN/A_TOKEN decimals
+    uint8 private _decimals;
+
     /// @notice Modifier to check if the caller is the yield claimer
     modifier onlyYieldClaimer() {
         _checkYieldClaimer();
@@ -45,6 +49,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
     ) external initializer {
         yieldTribute = _yieldTribute;
         TOKEN = IERC20(_token);
+        _decimals = IERC20Metadata(_token).decimals();
         A_TOKEN = IERC20(_aToken);
         POOL = IPool(_pool);
         REWARDS = IRewardsController(_rewards);
@@ -108,6 +113,11 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         address[] memory assets = new address[](1);
         assets[0] = address(A_TOKEN);
         return REWARDS.getAllUserRewards(assets, address(this));
+    }
+
+    /// @inheritdoc ERC20Upgradeable
+    function decimals() public view override returns (uint8 __decimals) {
+        __decimals = _decimals;
     }
 
     // --- Internal Utilities ---
