@@ -121,7 +121,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
 
     /// @inheritdoc IBuildersDollar
     function rewardsAccrued() external view returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts) {
-        address[] memory assets;
+        address[] memory assets = new address[](1);
         assets[0] = address(A_TOKEN);
         return REWARDS.getAllUserRewards(assets, address(this));
     }
