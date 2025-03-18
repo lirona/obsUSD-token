@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {BuildersDollar} from "../src/BuildersDollar.sol";
+import {BuildersDollar} from "src/BuildersDollar.sol";
 import {Test} from "forge-std/Test.sol";
-import {EIP173Proxy} from "../src/proxy/EIP173Proxy.sol";
+import {EIP173Proxy} from "src/proxy/EIP173Proxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface Depositable {
@@ -26,24 +26,19 @@ contract BuildersDollarTest is Test {
     BuildersDollar public buildersDollar;
 
     function setUp() public {
-        vm.rollFork(125665270);
+        // vm.rollFork(125665270);
 
         vm.startPrank(admin);
-        address buildersDollarAddress = address(
-            new BuildersDollar(
-                daiAddress,
-                aDaiAddress,
-                poolAddress,
-                rewardsAddress
-            )
-        );
+        address buildersDollarAddress = address(new BuildersDollar());
 
         buildersDollarProxy = new EIP173Proxy(buildersDollarAddress, address(this), bytes(""));
 
         vm.stopPrank();
         buildersDollar = BuildersDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
-        buildersDollar.initialize("buildersDollarchain Stablecoin", "buildersDollar");
+        buildersDollar.initialize(
+            daiAddress, aDaiAddress, poolAddress, rewardsAddress, "buildersDollarchain Stablecoin", "buildersDollar"
+        );
         vm.stopPrank();
         address proxyAdmin = buildersDollarProxy.proxyAdmin();
         vm.prank(proxyAdmin);
@@ -178,6 +173,5 @@ contract BuildersDollarTest is Test {
         vm.rollFork(127665270);
         uint256 yieldAccured = buildersDollar.yieldAccrued();
         assertGt(yieldAccured, 0);
-
     }
 }
