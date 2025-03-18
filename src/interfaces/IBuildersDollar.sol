@@ -35,10 +35,6 @@ interface IBuildersDollar {
     error ClaimZero();
     /// @notice Thrown when the yield accrued is insufficient
     error YieldInsufficient();
-    /// @notice Thrown when the claim rewards fails
-    error ClaimRewardsFailedLowLevel();
-    /// @notice Thrown when the claim rewards fails
-    error ClaimRewardsFailed();
     /// @notice Thrown when the value is zero
     error ZeroValue();
 
@@ -91,11 +87,6 @@ interface IBuildersDollar {
      * @param _amount The amount of yield to claim
      */
     function claimYield(uint256 _amount) external;
-
-    /**
-     * @notice Claims the rewards
-     */
-    function claimRewards() external;
 
     /**
      * @notice Rescues a token
