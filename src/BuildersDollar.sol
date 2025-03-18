@@ -24,6 +24,9 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
     /// @inheritdoc IBuildersDollar
     address public yieldClaimer;
 
+    /// @inheritdoc IBuildersDollar
+    address public yieldTribute;
+
     /// @notice Modifier to check if the caller is the yield claimer
     modifier onlyYieldClaimer() {
         _checkYieldClaimer();
@@ -32,6 +35,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
 
     /// @inheritdoc IBuildersDollar
     function initialize(
+        address _yieldTribute,
         address _token,
         address _aToken,
         address _pool,
@@ -39,6 +43,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         string memory name,
         string memory symbol
     ) external initializer {
+        yieldTribute = _yieldTribute;
         TOKEN = IERC20(_token);
         A_TOKEN = IERC20(_aToken);
         POOL = IPool(_pool);
@@ -78,7 +83,12 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         if (_amount == 0) revert ClaimZero();
         uint256 yield = _yieldAccrued();
         if (yield < _amount) revert YieldInsufficient();
-        POOL.withdraw(address(TOKEN), _amount, owner());
+
+        uint256 yieldToDistribute = _amount * 90 / 100;
+        uint256 yieldTributeAmount = _amount - yieldToDistribute;
+
+        POOL.withdraw(address(TOKEN), yieldToDistribute, yieldClaimer);
+        POOL.withdraw(address(TOKEN), yieldTributeAmount, yieldTribute);
         emit ClaimedYield(_amount);
 
         try this.claimRewards() {}

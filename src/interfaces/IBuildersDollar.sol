@@ -48,6 +48,7 @@ interface IBuildersDollar {
 
     /**
      * @notice Initializes the BuildersDollar contract
+     * @param _yieldTribute The address of the 10% yield tribute
      * @param _token The address of the token to be used as collateral
      * @param _aToken The address of the aToken to be used as collateral
      * @param _pool The address of the pool to be used as collateral
@@ -56,6 +57,7 @@ interface IBuildersDollar {
      * @param _symbol The symbol of the token
      */
     function initialize(
+        address _yieldTribute,
         address _token,
         address _aToken,
         address _pool,
@@ -135,6 +137,12 @@ interface IBuildersDollar {
      * @return _yieldClaimer The yield claimer
      */
     function yieldClaimer() external view returns (address _yieldClaimer);
+
+    /**
+     * @notice Returns the yield tribute
+     * @return _yieldTribute The yield tribute
+     */
+    function yieldTribute() external view returns (address _yieldTribute);
 
     /**
      * @notice Returns the yield accrued

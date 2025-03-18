@@ -16,6 +16,7 @@ contract DeployBuildersDollar is Script {
         string memory json = vm.readFile(path);
 
         // Parse config
+        address bread = json.readAddress(".bread");
         address dai = json.readAddress(".dai");
         address aDai = json.readAddress(".aDai");
         address aavePool = json.readAddress(".aavePool");
@@ -29,9 +30,7 @@ contract DeployBuildersDollar is Script {
         new EIP173ProxyWithReceive(
             address(dollar),
             address(this),
-            abi.encodeWithSelector(dollar.initialize.selector, dai, aDai, aavePool, aaveRewards, name, symbol)
+            abi.encodeWithSelector(dollar.initialize.selector, bread, dai, aDai, aavePool, aaveRewards, name, symbol)
         );
-
-        // Initialize
     }
 }

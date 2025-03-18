@@ -37,7 +37,13 @@ contract BuildersDollarTest is Test {
         buildersDollar = BuildersDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
         buildersDollar.initialize(
-            daiAddress, aDaiAddress, poolAddress, rewardsAddress, "buildersDollarchain Stablecoin", "buildersDollar"
+            address(0x69),
+            daiAddress,
+            aDaiAddress,
+            poolAddress,
+            rewardsAddress,
+            "buildersDollarchain Stablecoin",
+            "buildersDollar"
         );
         vm.stopPrank();
         address proxyAdmin = buildersDollarProxy.proxyAdmin();
