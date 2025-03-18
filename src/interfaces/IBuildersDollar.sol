@@ -2,8 +2,8 @@
 pragma solidity ^0.8.15;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IPool} from "interfaces/IPool.sol";
-import {IRewardsController} from "interfaces/IRewardsController.sol";
+import {IPool} from "src/interfaces/IPool.sol";
+import {IRewardsController} from "src/interfaces/IRewardsController.sol";
 
 /**
  * @title BuildersDollar - An ERC20 stablecoin fully collateralized by DAI

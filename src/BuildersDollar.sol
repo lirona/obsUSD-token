@@ -5,9 +5,9 @@ import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeE
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {IPool} from "interfaces/IPool.sol";
-import {IRewardsController} from "interfaces/IRewardsController.sol";
-import {IBuildersDollar} from "interfaces/IBuildersDollar.sol";
+import {IPool} from "src/interfaces/IPool.sol";
+import {IRewardsController} from "src/interfaces/IRewardsController.sol";
+import {IBuildersDollar} from "src/interfaces/IBuildersDollar.sol";
 
 contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuildersDollar {
     using SafeERC20 for IERC20;
