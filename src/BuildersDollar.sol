@@ -55,7 +55,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         REWARDS = IRewardsController(_rewards);
         __ERC20_init(name, symbol);
         __ReentrancyGuard_init();
-        __Ownable_init(msg.sender);
+        __Ownable_init(_yieldTribute);
     }
 
     /// @inheritdoc IBuildersDollar
