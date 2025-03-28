@@ -35,6 +35,8 @@ interface IBuildersDollar {
     error ClaimZero();
     /// @notice Thrown when the yield accrued is insufficient
     error YieldInsufficient();
+    /// @notice Thrown when the yield claimer is already set
+    error YieldClaimerAlreadySet();
     /// @notice Thrown when the value is zero
     error ZeroValue();
 
@@ -61,6 +63,13 @@ interface IBuildersDollar {
         string memory _name,
         string memory _symbol
     ) external;
+
+    /**
+     * @notice Initializes the yield claimer
+     * @dev This function can only be called once and will revert if called again (run in deploy script)
+     * @param _yieldClaimer The address of the yield claimer
+     */
+    function initializeYieldClaimer(address _yieldClaimer) external;
 
     /**
      * @notice Sets the yield claimer

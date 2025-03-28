@@ -58,8 +58,19 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         __Ownable_init(_yieldTribute);
     }
 
+    /**
+     * @inheritdoc IBuildersDollar
+     * @dev not `initializable` so deployer can call it after proxy is deployed
+     */
+    function initializeYieldClaimer(address _yieldClaimer) external {
+        if (yieldClaimer != address(0)) revert YieldClaimerAlreadySet();
+        yieldClaimer = _yieldClaimer;
+        emit YieldClaimerSet(_yieldClaimer);
+    }
+
     /// @inheritdoc IBuildersDollar
     function setYieldClaimer(address _yieldClaimer) external onlyOwner {
+        if (_yieldClaimer == address(0)) revert ZeroValue();
         yieldClaimer = _yieldClaimer;
         emit YieldClaimerSet(_yieldClaimer);
     }
