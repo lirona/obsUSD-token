@@ -7,25 +7,25 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {IPool} from "src/interfaces/IPool.sol";
 import {IRewardsController} from "src/interfaces/IRewardsController.sol";
-import {IBuildersDollar} from "src/interfaces/IBuildersDollar.sol";
+import {IBuilderDollar} from "src/interfaces/IBuilderDollar.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuildersDollar {
+contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuilderDollar {
     using SafeERC20 for IERC20;
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     IERC20 public TOKEN;
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     IERC20 public A_TOKEN;
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     IPool public POOL;
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     IRewardsController public REWARDS;
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     address public yieldClaimer;
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     address public yieldTribute;
 
     /// @notice this.decimals match TOKEN/A_TOKEN decimals
@@ -37,7 +37,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         _;
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function initialize(
         address _yieldTribute,
         address _token,
@@ -59,7 +59,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
     }
 
     /**
-     * @inheritdoc IBuildersDollar
+     * @inheritdoc IBuilderDollar
      * @dev not `initializable` so deployer can call it after proxy is deployed
      */
     function initializeYieldClaimer(address _yieldClaimer) external {
@@ -68,14 +68,14 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         emit YieldClaimerSet(_yieldClaimer);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function setYieldClaimer(address _yieldClaimer) external onlyOwner {
         if (_yieldClaimer == address(0)) revert ZeroValue();
         yieldClaimer = _yieldClaimer;
         emit YieldClaimerSet(_yieldClaimer);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function mint(uint256 _amount, address _receiver) external nonReentrant {
         if (_amount == 0) revert ZeroValue();
         TOKEN.safeTransferFrom(msg.sender, address(this), _amount);
@@ -85,7 +85,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         emit Minted(_receiver, _amount);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function burn(uint256 _amount, address _receiver) external nonReentrant {
         if (_amount == 0) revert ZeroValue();
         _burn(msg.sender, _amount);
@@ -94,7 +94,7 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         emit Burned(_receiver, _amount);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function claimYield(uint256 _amount) external onlyYieldClaimer {
         if (_amount == 0) revert ClaimZero();
         uint256 yield = _yieldAccrued();
@@ -108,18 +108,18 @@ contract BuildersDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuard
         emit ClaimedYield(_amount);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function rescueToken(address _token, uint256 _amount) external onlyOwner {
-        require(_token != address(A_TOKEN), "BuildersDollar: cannot withdraw collateral");
+        require(_token != address(A_TOKEN), "BuilderDollar: cannot withdraw collateral");
         IERC20(_token).safeTransfer(owner(), _amount);
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function yieldAccrued() external view returns (uint256) {
         return _yieldAccrued();
     }
 
-    /// @inheritdoc IBuildersDollar
+    /// @inheritdoc IBuilderDollar
     function rewardsAccrued() external view returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts) {
         address[] memory assets = new address[](1);
         assets[0] = address(A_TOKEN);

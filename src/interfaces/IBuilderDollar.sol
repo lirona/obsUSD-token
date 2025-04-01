@@ -6,10 +6,10 @@ import {IPool} from "src/interfaces/IPool.sol";
 import {IRewardsController} from "src/interfaces/IRewardsController.sol";
 
 /**
- * @title BuildersDollar - An ERC20 stablecoin fully collateralized by DAI
+ * @title BuilderDollar - An ERC20 stablecoin fully collateralized by DAI
  * @notice Earns yield in Aave for the BuildersDollarchain Ecosystem
  */
-interface IBuildersDollar {
+interface IBuilderDollar {
     /*///////////////////////////////////////////////////////////////
                             EVENTS
     //////////////////////////////////////////////////////////////*/
@@ -45,7 +45,7 @@ interface IBuildersDollar {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Initializes the BuildersDollar contract
+     * @notice Initializes the BuilderDollar contract
      * @param _yieldTribute The address of the 10% yield tribute
      * @param _token The address of the token to be used as collateral
      * @param _aToken The address of the aToken to be used as collateral

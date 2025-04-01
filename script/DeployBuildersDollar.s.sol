@@ -2,7 +2,7 @@
 pragma solidity ^0.8.15;
 
 import {Script} from "forge-std/Script.sol";
-import {BuildersDollar} from "../src/BuildersDollar.sol";
+import {BuilderDollar} from "../src/BuilderDollar.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 import {EIP173ProxyWithReceive} from "../src/vendor/EIP173ProxyWithReceive.sol";
 
@@ -26,7 +26,7 @@ contract DeployBuildersDollar is Script {
 
         // Deploy
         vm.broadcast();
-        BuildersDollar dollar = new BuildersDollar();
+        BuilderDollar dollar = new BuilderDollar();
         new EIP173ProxyWithReceive(
             address(dollar),
             address(this),

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {BuildersDollar} from "src/BuildersDollar.sol";
+import {BuilderDollar} from "src/BuilderDollar.sol";
 import {Test} from "forge-std/Test.sol";
 import {EIP173Proxy} from "src/proxy/EIP173Proxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -23,18 +23,18 @@ contract BuildersDollarTest is Test {
     IERC20 public dai = IERC20(daiAddress);
     IERC20 public aDai = IERC20(aDaiAddress);
     EIP173Proxy public buildersDollarProxy;
-    BuildersDollar public buildersDollar;
+    BuilderDollar public buildersDollar;
 
     function setUp() public {
         // vm.rollFork(125665270);
 
         vm.startPrank(admin);
-        address buildersDollarAddress = address(new BuildersDollar());
+        address buildersDollarAddress = address(new BuilderDollar());
 
         buildersDollarProxy = new EIP173Proxy(buildersDollarAddress, address(this), bytes(""));
 
         vm.stopPrank();
-        buildersDollar = BuildersDollar(address(buildersDollarProxy));
+        buildersDollar = BuilderDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
         buildersDollar.initialize(
             address(0x69),
@@ -111,7 +111,7 @@ contract BuildersDollarTest is Test {
         assertGt(aDaiBalance, 0);
 
         vm.prank(admin);
-        vm.expectRevert("BuildersDollar: cannot withdraw collateral");
+        vm.expectRevert("BuilderDollar: cannot withdraw collateral");
         buildersDollar.rescueToken(address(aDai), 1);
 
         uint256 supplyBefore = buildersDollar.totalSupply();
