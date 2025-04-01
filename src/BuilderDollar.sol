@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IPool} from "@aave-core-v3/interfaces/IPool.sol";
-import {IBuilderDollar} from "src/interfaces/IBuilderDollar.sol";
+import {IBuilderDollar} from "@interfaces/IBuilderDollar.sol";
 
 contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuilderDollar {
     using SafeERC20 for IERC20;
