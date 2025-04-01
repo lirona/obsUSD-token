@@ -12,7 +12,7 @@ interface Depositable {
 
 interface IERC20Depositable is Depositable, IERC20 {}
 
-contract BuildersDollarTest is Test {
+contract BuilderDollarTest is Test {
     address public constant daiAddress = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
     address public constant aDaiAddress = 0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE;
     address public constant poolAddress = 0x794a61358D6845594F94dc1DB02A252b5b4814aD;
@@ -41,7 +41,6 @@ contract BuildersDollarTest is Test {
             daiAddress,
             aDaiAddress,
             poolAddress,
-            rewardsAddress,
             "buildersDollarchain Stablecoin",
             "buildersDollar"
         );

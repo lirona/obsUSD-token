@@ -2,12 +2,11 @@
 pragma solidity ^0.8.15;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IPool} from "src/interfaces/IPool.sol";
-import {IRewardsController} from "src/interfaces/IRewardsController.sol";
+import {IPool} from "@aave-core-v3/interfaces/IPool.sol";
 
 /**
  * @title BuilderDollar - An ERC20 stablecoin fully collateralized by DAI
- * @notice Earns yield in Aave for the BuildersDollarchain Ecosystem
+ * @notice Earns yield in Aave for the BuilderDollarchain Ecosystem
  */
 interface IBuilderDollar {
     /*///////////////////////////////////////////////////////////////
@@ -50,7 +49,6 @@ interface IBuilderDollar {
      * @param _token The address of the token to be used as collateral
      * @param _aToken The address of the aToken to be used as collateral
      * @param _pool The address of the pool to be used as collateral
-     * @param _rewards The address of the rewards to be used as collateral
      * @param _name The name of the token
      * @param _symbol The symbol of the token
      */
@@ -59,7 +57,6 @@ interface IBuilderDollar {
         address _token,
         address _aToken,
         address _pool,
-        address _rewards,
         string memory _name,
         string memory _symbol
     ) external;
@@ -127,12 +124,6 @@ interface IBuilderDollar {
     function POOL() external view returns (IPool _pool);
 
     /**
-     * @notice Returns the rewards controller
-     * @return _rewards The rewards controller
-     */
-    function REWARDS() external view returns (IRewardsController _rewards);
-
-    /**
      * @notice Returns the yield claimer
      * @return _yieldClaimer The yield claimer
      */
@@ -149,14 +140,4 @@ interface IBuilderDollar {
      * @return _yield The yield accrued
      */
     function yieldAccrued() external view returns (uint256 _yield);
-
-    /**
-     * @notice Returns the rewards accrued
-     * @return _rewardsList The list of rewards
-     * @return _unclaimedAmounts The list of unclaimed amounts
-     */
-    function rewardsAccrued()
-        external
-        view
-        returns (address[] memory _rewardsList, uint256[] memory _unclaimedAmounts);
 }

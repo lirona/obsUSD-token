@@ -5,10 +5,9 @@ import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeE
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {IPool} from "src/interfaces/IPool.sol";
-import {IRewardsController} from "src/interfaces/IRewardsController.sol";
-import {IBuilderDollar} from "src/interfaces/IBuilderDollar.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {IPool} from "@aave-core-v3/interfaces/IPool.sol";
+import {IBuilderDollar} from "src/interfaces/IBuilderDollar.sol";
 
 contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IBuilderDollar {
     using SafeERC20 for IERC20;
@@ -19,8 +18,6 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     IERC20 public A_TOKEN;
     /// @inheritdoc IBuilderDollar
     IPool public POOL;
-    /// @inheritdoc IBuilderDollar
-    IRewardsController public REWARDS;
 
     /// @inheritdoc IBuilderDollar
     address public yieldClaimer;
@@ -43,7 +40,6 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
         address _token,
         address _aToken,
         address _pool,
-        address _rewards,
         string memory name,
         string memory symbol
     ) external initializer {
@@ -52,7 +48,6 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
         _decimals = IERC20Metadata(_token).decimals();
         A_TOKEN = IERC20(_aToken);
         POOL = IPool(_pool);
-        REWARDS = IRewardsController(_rewards);
         __ERC20_init(name, symbol);
         __ReentrancyGuard_init();
         __Ownable_init(_yieldTribute);
@@ -117,13 +112,6 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     /// @inheritdoc IBuilderDollar
     function yieldAccrued() external view returns (uint256) {
         return _yieldAccrued();
-    }
-
-    /// @inheritdoc IBuilderDollar
-    function rewardsAccrued() external view returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts) {
-        address[] memory assets = new address[](1);
-        assets[0] = address(A_TOKEN);
-        return REWARDS.getAllUserRewards(assets, address(this));
     }
 
     /// @inheritdoc ERC20Upgradeable
