@@ -96,7 +96,10 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
         if (yield < _amount) revert YieldInsufficient();
 
         uint256 yieldToDistribute = _amount * 90 / 100;
-        uint256 yieldTributeAmount = _amount - yieldToDistribute;
+        uint256 yieldTributeAmount;
+        unchecked {
+            yieldTributeAmount = _amount - yieldToDistribute;
+        }
 
         POOL.withdraw(address(TOKEN), yieldToDistribute, yieldClaimer);
         POOL.withdraw(address(TOKEN), yieldTributeAmount, yieldTribute);
