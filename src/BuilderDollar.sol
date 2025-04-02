@@ -134,7 +134,7 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
      */
     function _checkYieldClaimer() internal view virtual {
         if (yieldClaimer != msg.sender) {
-            revert OwnableUnauthorizedAccount(msg.sender);
+            revert OnlyClaimers();
         }
     }
 }
