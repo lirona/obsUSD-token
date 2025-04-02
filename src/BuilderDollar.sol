@@ -30,7 +30,9 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     /// @notice Modifier to check if the caller is the yield claimer
     modifier onlyYieldClaimer() {
-        _checkYieldClaimer();
+        if (yieldClaimer != msg.sender) {
+            revert OnlyClaimers();
+        }
         _;
     }
 
@@ -120,16 +122,5 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     /// @inheritdoc ERC20Upgradeable
     function decimals() public view override returns (uint8 __decimals) {
         __decimals = _decimals;
-    }
-
-    // --- Internal Utilities ---
-
-    /**
-     * @notice Checks if the caller is the yield claimer
-     */
-    function _checkYieldClaimer() internal view virtual {
-        if (yieldClaimer != msg.sender) {
-            revert OnlyClaimers();
-        }
     }
 }
