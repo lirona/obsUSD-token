@@ -36,6 +36,10 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
         _;
     }
 
+    constructor() {
+        _disableInitializers();
+    }
+
     /// @inheritdoc IBuilderDollar
     function initialize(
         address _yieldTribute,
