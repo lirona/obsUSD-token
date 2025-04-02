@@ -92,7 +92,7 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     /// @inheritdoc IBuilderDollar
     function claimYield(uint256 _amount) external onlyYieldClaimer {
         if (_amount == 0) revert ClaimZero();
-        uint256 yield = _yieldAccrued();
+        uint256 yield = yieldAccrued();
         if (yield < _amount) revert YieldInsufficient();
 
         uint256 yieldToDistribute = _amount * 90 / 100;
@@ -113,8 +113,8 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     /// @inheritdoc IBuilderDollar
-    function yieldAccrued() external view returns (uint256) {
-        return _yieldAccrued();
+    function yieldAccrued() public view returns (uint256 _yield) {
+        _yield = A_TOKEN.balanceOf(address(this)) - totalSupply();
     }
 
     /// @inheritdoc ERC20Upgradeable
@@ -123,14 +123,6 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     // --- Internal Utilities ---
-
-    /**
-     * @notice Returns the yield accrued by the contract
-     * @return _yield yield accrued by the contract
-     */
-    function _yieldAccrued() internal view returns (uint256 _yield) {
-        _yield = A_TOKEN.balanceOf(address(this)) - totalSupply();
-    }
 
     /**
      * @notice Checks if the caller is the yield claimer
