@@ -37,7 +37,7 @@ contract BuilderDollarTest is Test {
         buildersDollar = BuilderDollar(address(buildersDollarProxy));
         vm.startPrank(admin);
         buildersDollar.initialize(
-            address(0x69),
+            admin,
             daiAddress,
             aDaiAddress,
             poolAddress,
@@ -175,7 +175,8 @@ contract BuilderDollarTest is Test {
         dai.approve(address(buildersDollar), balanceOfDAI_HOLDER);
         vm.prank(DAI_HOLDER);
         buildersDollar.mint(balanceOfDAI_HOLDER, DAI_HOLDER);
-        vm.rollFork(127665270);
+       // vm.rollFork(127665270);
+        vm.warp(block.timestamp + 30 days);
         uint256 yieldAccured = buildersDollar.yieldAccrued();
         assertGt(yieldAccured, 0);
     }
