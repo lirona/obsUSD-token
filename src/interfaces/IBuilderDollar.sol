@@ -23,6 +23,8 @@ interface IBuilderDollar {
     event ClaimedYield(uint256 amount);
     /// @notice Emitted when the rewards are claimed
     event ClaimedRewards(address[] rewardsList, uint256[] claimedAmounts);
+    /// @notice Emitted when a token is rescued
+    event RescuedToken(address token, uint256 amount);
 
     /*///////////////////////////////////////////////////////////////
                             ERRORS

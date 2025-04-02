@@ -116,6 +116,7 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
     function rescueToken(address _token, uint256 _amount) external onlyOwner {
         require(_token != address(A_TOKEN), "BuilderDollar: cannot withdraw collateral");
         IERC20(_token).safeTransfer(owner(), _amount);
+        emit RescuedToken(_token, _amount);
     }
 
     /// @inheritdoc IBuilderDollar
