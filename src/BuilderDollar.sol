@@ -91,7 +91,8 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
         if (_amount == 0) revert ZeroValue();
         _burn(msg.sender, _amount);
         A_TOKEN.safeIncreaseAllowance(address(POOL), _amount);
-        POOL.withdraw(address(TOKEN), _amount, _receiver);
+        uint256 amountWithdrawn = POOL.withdraw(address(TOKEN), _amount, _receiver);
+        if (amountWithdrawn != _amount) revert AmountWithdrawnMismatch();
         emit Burned(_receiver, _amount);
     }
 
@@ -107,8 +108,10 @@ contract BuilderDollar is ERC20Upgradeable, OwnableUpgradeable, ReentrancyGuardU
             yieldTributeAmount = _amount - yieldToDistribute;
         }
 
-        POOL.withdraw(address(TOKEN), yieldToDistribute, yieldClaimer);
-        POOL.withdraw(address(TOKEN), yieldTributeAmount, yieldTribute);
+        uint256 yieldToDistributeWithdrawn = POOL.withdraw(address(TOKEN), yieldToDistribute, yieldClaimer);
+        if (yieldToDistributeWithdrawn != yieldToDistribute) revert AmountWithdrawnMismatch();
+        uint256 yieldTributeWithdrawn = POOL.withdraw(address(TOKEN), yieldTributeAmount, yieldTribute);
+        if (yieldTributeWithdrawn != yieldTributeAmount) revert AmountWithdrawnMismatch();
         emit ClaimedYield(_amount);
     }
 

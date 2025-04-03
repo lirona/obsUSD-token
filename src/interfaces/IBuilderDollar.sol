@@ -40,6 +40,8 @@ interface IBuilderDollar {
     error YieldClaimerAlreadySet();
     /// @notice Thrown when the value is zero
     error ZeroValue();
+    /// @notice Thrown when the amount withdrawn from the pool is not the expected amount
+    error AmountWithdrawnMismatch();
 
     /*///////////////////////////////////////////////////////////////
                             FUNCTIONS
